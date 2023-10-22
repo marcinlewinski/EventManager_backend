@@ -1,7 +1,7 @@
 package com.wildevent.WildEventMenager.myEvent.service;
 
+import com.wildevent.WildEventMenager.event.model.Event;
 import com.wildevent.WildEventMenager.location.model.Location;
-import com.wildevent.WildEventMenager.myEvent.model.MyEvent;
 import com.wildevent.WildEventMenager.myEvent.model.MyEventDTO;
 import com.wildevent.WildEventMenager.myEvent.repository.MyEventRepository;
 import com.wildevent.WildEventMenager.myEvent.service.dtoMapper.MyEventDTOMapper;
@@ -40,7 +40,7 @@ public class MyEventServiceImplTest {
     @Test
     void shouldReturnEventsForLoggedInUser() {
         UUID mockUserId = UUID.randomUUID();
-        MyEvent mockEvent = new MyEvent();
+        Event mockEvent = new Event();
         mockEvent.setTitle("Test Event");
         mockEvent.setId(mockUserId);
         mockEvent.setDescription("Test Description");
@@ -48,7 +48,7 @@ public class MyEventServiceImplTest {
         mockEvent.setOpenToPublic(true);
         mockEvent.setStartsAt(LocalDateTime.of(2023, 8, 24, 10, 0));
         mockEvent.setEndsAt(LocalDateTime.of(2023, 8, 24, 14, 0));
-        mockEvent.setOrganizer(new WildUser());
+        mockEvent.setOrganizer(List.of(new WildUser()));
 
         MyEventDTO mockEventDTO = new MyEventDTO(
                 mockEvent.getId(),
@@ -62,7 +62,7 @@ public class MyEventServiceImplTest {
 
 
         when(securityContextProvider.getLoggedInUserId()).thenReturn(mockUserId);
-        when(myEventRepository.findDistinctByLocationWildUserIdOrOrganizerId(mockUserId)).thenReturn(Collections.singletonList(mockEvent));
+        when(myEventRepository.findByOrganizer_Id(mockUserId)).thenReturn(Collections.singletonList(mockEvent));
         when(myEventDTOMapper.getEventDtoFromEvent(mockEvent)).thenReturn(mockEventDTO);
 
         List<MyEventDTO> results = myEventService.getAllActiveEventsForLoggedInUser();

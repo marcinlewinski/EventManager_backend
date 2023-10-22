@@ -1,6 +1,6 @@
 package com.wildevent.WildEventMenager.myEvent.service;
 
-import com.wildevent.WildEventMenager.myEvent.model.MyEvent;
+import com.wildevent.WildEventMenager.event.model.Event;
 import com.wildevent.WildEventMenager.myEvent.model.MyEventDTO;
 import com.wildevent.WildEventMenager.myEvent.repository.MyEventRepository;
 import com.wildevent.WildEventMenager.myEvent.service.dtoMapper.MyEventDTOMapper;
@@ -35,7 +35,7 @@ public class MyEventServiceImpl implements MyEventService {
             return Collections.emptyList();
         }
 
-        List<MyEvent> events = myEventRepository.findDistinctByLocationWildUserIdOrOrganizerId(loggedInUserId);
+        List<Event> events = myEventRepository.findByOrganizer_Id(loggedInUserId);
 
         if (events == null || events.isEmpty()) {
             return Collections.emptyList();

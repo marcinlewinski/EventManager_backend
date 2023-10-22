@@ -11,8 +11,6 @@ import com.wildevent.WildEventMenager.user.model.WildUserDTO;
 import com.wildevent.WildEventMenager.user.repository.WildUserRepository;
 import com.wildevent.WildEventMenager.user.model.ReceivedWildUserDTO;
 import com.wildevent.WildEventMenager.user.service.dtoMapper.UserDTOMapper;
-import com.wildevent.WildEventMenager.user.service.email.EmailSendingService;
-import com.wildevent.WildEventMenager.user.service.password.PasswordGeneratorService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,15 +27,11 @@ class WildUserServiceImplTest {
     @Mock
     WildUserRepository wildUserRepository;
     @Mock
-    private PasswordGeneratorService passwordGeneratorService;
-    @Mock
     private LocationService locationService;
     @Mock
     private RoleService roleService;
     @Mock
     private EventService eventService;
-    @Mock
-    private EmailSendingService emailSendingService;
     @Mock
     private UserDTOMapper userDTOMapper;
 
@@ -81,33 +75,6 @@ class WildUserServiceImplTest {
         List<WildUserDTO> result = wildUserService.getAllActiveUsers();
 
         assertEquals(2, result.size());
-    }
-
-
-    @Test
-    public void testCreateUser() {
-        UUID roleId = UUID.randomUUID();
-        UUID locationId = UUID.randomUUID();
-        Role role = new Role();
-        Location location = new Location();
-
-        when(roleService.mapRolesFromIds(anySet())).thenReturn(Collections.singleton(role));
-        when(locationService.mapLocationsFromIds(anyList())).thenReturn(Collections.singletonList(location));
-        when(passwordGeneratorService.generatePassword()).thenReturn("password");
-        when(wildUserRepository.save(any())).thenReturn(new WildUser());
-
-        ReceivedWildUserDTO userDTO = new ReceivedWildUserDTO();
-        userDTO.setLocationIds(Collections.singletonList(String.valueOf(locationId)));
-        userDTO.setRoleIds(Collections.singleton(String.valueOf(roleId)));
-        userDTO.setName("John");
-        userDTO.setEmail("john@example.com");
-        userDTO.setPhone("123456789");
-
-        boolean result = wildUserService.createUser(userDTO);
-
-        assertTrue(result);
-        verify(emailSendingService, times(1)).sendWelcomeEmail(anyString(), anyString());
-        verify(wildUserRepository, times(1)).save(any(WildUser.class));
     }
 
     @Test

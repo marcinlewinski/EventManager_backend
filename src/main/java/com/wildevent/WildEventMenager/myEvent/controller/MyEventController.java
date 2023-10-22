@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/my-events")
-public class MyEventController {
+public class  MyEventController {
     private final MyEventService myEventService;
 
     @Autowired
