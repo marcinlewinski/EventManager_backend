@@ -13,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterResponse {
+    private String id;
     private String name;
     private String phone;
     private String email;
