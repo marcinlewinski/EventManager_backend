@@ -48,12 +48,12 @@ public class WildUserController {
     }
 
     @PutMapping(value = STAFF_MANAGEMENT_ACTIVE_STAFF_URL + "/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable UUID userId, @RequestBody ReceivedWildUserDTO userDTO) {
+    public ResponseEntity<WildUserDTO> updateUser(@PathVariable UUID userId, @RequestBody ReceivedWildUserDTO userDTO) {
         try {
-            wildUserService.updateUser(userId, userDTO);
-            return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
+            WildUserDTO updatedUser = wildUserService.updateUser(userId, userDTO);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
