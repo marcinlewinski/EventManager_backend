@@ -62,12 +62,13 @@ public class AuthenticationService {
                     .role(roles)
                     .build();
 
-            wildUserRepository.save(user);
+            WildUser savedUser = wildUserRepository.save(user);
             String resetToken = jwtService.generatePasswordResetToken(user);
 
             emailSendingService.sendPasswordResetEmail(user.getEmail(), resetToken);
 
             return RegisterResponse.builder()
+                    .id(String.valueOf(savedUser.getId()))
                     .name(request.getName())
                     .email(request.getEmail())
                     .phone(request.getPhone())
