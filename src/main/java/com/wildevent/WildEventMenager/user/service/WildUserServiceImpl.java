@@ -82,10 +82,13 @@ public class WildUserServiceImpl implements WildUserService {
     }
 
     @Override
-    public void updateUser(UUID userId, ReceivedWildUserDTO userDTO) {
+    @Transactional
+    public WildUserDTO updateUser(UUID userId, ReceivedWildUserDTO userDTO) {
         WildUser user = getUserById(userId);
         mapReceivedUserDtoToWildUser(user, userDTO);
-        wildUserRepository.save(user);
+        WildUser updatedUser = wildUserRepository.save(user);
+
+        return userDTOMapper.getUserDtoFromWildUser(updatedUser);
     }
 
     @Override
