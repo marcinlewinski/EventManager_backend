@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface WildUserService {
     List<WildUserDTO> getAllActiveUsers();
     boolean createUser(ReceivedWildUserDTO userDTO);
-    void updateUser(UUID userId, ReceivedWildUserDTO userDTO);
+    WildUserDTO updateUser(UUID userId, ReceivedWildUserDTO userDTO);
     void deactivateUser(UUID userId);
     List<WildUserNameIdDTO> getAllUsers();
 }

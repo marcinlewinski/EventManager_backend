@@ -9,6 +9,7 @@ import com.wildevent.WildEventMenager.security.auth.dto.RegisterRequestDTO;
 import com.wildevent.WildEventMenager.security.auth.dto.ResetPasswordByUserRequestDTO;
 import com.wildevent.WildEventMenager.security.auth.dto.ResetPasswordRequestDTO;
 import com.wildevent.WildEventMenager.security.auth.response.AuthenticationResponse;
+import com.wildevent.WildEventMenager.security.auth.response.RegisterResponse;
 import com.wildevent.WildEventMenager.security.config.JwtService;
 import com.wildevent.WildEventMenager.user.model.WildUser;
 import com.wildevent.WildEventMenager.user.repository.WildUserRepository;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     @Transactional
-    public AuthenticationResponse register(RegisterRequestDTO request) {
+    public RegisterResponse register(RegisterRequestDTO request) {
         try {
             String randomPassword = generateRandomPassword();
             List<Location> locations = locationService.mapLocationsFromIds(request.getLocationIds());
@@ -60,13 +62,18 @@ public class AuthenticationService {
                     .role(roles)
                     .build();
 
-            wildUserRepository.save(user);
+            WildUser savedUser = wildUserRepository.save(user);
             String resetToken = jwtService.generatePasswordResetToken(user);
 
             emailSendingService.sendPasswordResetEmail(user.getEmail(), resetToken);
 
-            return AuthenticationResponse.builder()
-                    .token(resetToken)
+            return RegisterResponse.builder()
+                    .id(String.valueOf(savedUser.getId()))
+                    .name(request.getName())
+                    .email(request.getEmail())
+                    .phone(request.getPhone())
+                    .locations(locations.stream().map(Location::getTitle).toList())
+                    .roles(roles.stream().map(Role::getName).collect(Collectors.toSet()))
                     .build();
 
         } catch (Exception e) {
@@ -114,7 +121,7 @@ public class AuthenticationService {
         if (jwtService.isTokenValid(token, userDetails)) {
             String tokenType = jwtService.extractTokenType(token);
 
-            if(!"reset_password".equals((tokenType))) {
+            if (!"reset_password".equals((tokenType))) {
                 throw new IllegalArgumentException("Invalid token type");
             }
 

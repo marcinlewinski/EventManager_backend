@@ -1,5 +1,6 @@
 package com.wildevent.WildEventMenager.security.auth.controller;
 
+import com.wildevent.WildEventMenager.security.auth.response.RegisterResponse;
 import com.wildevent.WildEventMenager.security.auth.service.AuthenticationService;
 import com.wildevent.WildEventMenager.security.auth.dto.AuthenticationRequestDTO;
 import com.wildevent.WildEventMenager.security.auth.dto.RegisterRequestDTO;
@@ -21,10 +22,10 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<RegisterResponse> register(
             @Valid @RequestBody RegisterRequestDTO request
     ) {
-        AuthenticationResponse response = service.register(request);
+        RegisterResponse response = service.register(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
