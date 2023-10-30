@@ -1,21 +1,26 @@
 package com.wildevent.WildEventMenager.location.service.dtoMappers;
 
 import com.wildevent.WildEventMenager.coordinate.model.Coordinate;
+import com.wildevent.WildEventMenager.coordinate.model.CoordinateDTO;
 import com.wildevent.WildEventMenager.coordinate.service.CoordinateDTOMapper;
 import com.wildevent.WildEventMenager.event.model.dto.EventTitleDTO;
 import com.wildevent.WildEventMenager.event.service.dtoMappers.EventDTOMapper;
 import com.wildevent.WildEventMenager.location.model.Location;
 import com.wildevent.WildEventMenager.location.model.dto.*;
 import com.wildevent.WildEventMenager.map.model.Map;
+import com.wildevent.WildEventMenager.role.model.Role;
 import com.wildevent.WildEventMenager.user.model.WildUserDTO;
 import com.wildevent.WildEventMenager.user.service.dtoMapper.UserDTOMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationDTOMapperImpl implements LocationDTOMapper {
+
+
     private final EventDTOMapper eventDTOMapper;
 
     private final CoordinateDTOMapper coordinateDTOMapper;
@@ -38,6 +43,33 @@ public class LocationDTOMapperImpl implements LocationDTOMapper {
                 events
         );
     }
+
+    @Override
+    public LocationWithCoordinateDTO getMapLocation(Location locationFromDTO) {
+        List<WildUserDTO> wildUserDTOList = locationFromDTO.getWildUser().stream()
+                .map(e -> new WildUserDTO(
+                        e.getId(),
+                        e.getName(),
+                        e.getEmail(),
+                        e.getPhone(),
+                        e.getRole().stream().map(Role::getName).collect(Collectors.toList()),
+                        e.getLocation().stream().map(Location::getTitle).collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+
+        return new LocationWithCoordinateDTO(
+                locationFromDTO.getId(),
+                locationFromDTO.getTitle(),
+                locationFromDTO.getDescription(),
+                new CoordinateDTO(
+                        locationFromDTO.getCoordinate().getId(),
+                        locationFromDTO.getCoordinate().getLatitude(),
+                        locationFromDTO.getCoordinate().getLongitude()
+                ),
+                wildUserDTOList
+        );
+    }
+
 
     @Override
     public LocationIdTitleDTO getLocationIdTitleDTO(Location location) {

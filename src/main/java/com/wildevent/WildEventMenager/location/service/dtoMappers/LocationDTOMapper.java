@@ -20,4 +20,6 @@ public interface LocationDTOMapper {
     Location getNewLocationFromDTO(ReceivedLocationDTO locationDTO, Map map);
 
     Location getUpdatedLocationFromReceivedDto(ReceivedLocationDTO locationDTO, Location location);
+
+    LocationWithCoordinateDTO getMapLocation(Location locationFromDTO);
 }

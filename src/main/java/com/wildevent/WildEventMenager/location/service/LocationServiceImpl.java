@@ -2,10 +2,7 @@ package com.wildevent.WildEventMenager.location.service;
 
 import com.wildevent.WildEventMenager.event.repository.EventRepository;
 import com.wildevent.WildEventMenager.location.model.Location;
-import com.wildevent.WildEventMenager.location.model.dto.LocationDTO;
-import com.wildevent.WildEventMenager.location.model.dto.LocationIdTitleDTO;
-import com.wildevent.WildEventMenager.location.model.dto.LocationPointDTO;
-import com.wildevent.WildEventMenager.location.model.dto.ReceivedLocationDTO;
+import com.wildevent.WildEventMenager.location.model.dto.*;
 import com.wildevent.WildEventMenager.location.repository.LocationRepository;
 import com.wildevent.WildEventMenager.location.service.dtoMappers.LocationDTOMapper;
 import com.wildevent.WildEventMenager.map.model.Map;
@@ -18,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,16 +63,25 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public void saveLocation(ReceivedLocationDTO locationDTO) {
+    public LocationWithCoordinateDTO saveLocation(ReceivedLocationDTO locationDTO) {
         Map map = mapRepository.findFirstByCurrentIsTrue();
         Location locationFromDTO = locationDTOMapper.getNewLocationFromDTO(locationDTO, map);
-        locationRepository.save(locationFromDTO);
+        Location savedLocation = locationRepository.save(locationFromDTO);
+        return locationDTOMapper.getMapLocation(savedLocation);
     }
 
     @Override
-    public void updateLocation(ReceivedLocationDTO locationDTO) {
+    public LocationWithCoordinateDTO updateLocation(ReceivedLocationDTO locationDTO) {
         Optional<Location> oldLocation = locationRepository.findById(locationDTO.getId());
-        oldLocation.ifPresent(location -> locationRepository.save(locationDTOMapper.getUpdatedLocationFromReceivedDto(locationDTO, location)));
+
+        if (oldLocation.isPresent()) {
+            Location location = oldLocation.get();
+            Location updatedLocation = locationDTOMapper.getUpdatedLocationFromReceivedDto(locationDTO, location);
+            Location savedLocation = locationRepository.save(updatedLocation);
+            return locationDTOMapper.getMapLocation(savedLocation);
+        } else {
+            throw new NoSuchElementException("Location not found with ID: " + locationDTO.getId());
+        }
     }
 
     @Override

@@ -73,7 +73,7 @@ public class LocationController {
             return ResponseEntity.badRequest().body(errors);
         } else {
             try {
-                locationService.saveLocation(locationDTO);
+                return ResponseEntity.ok().body(locationService.saveLocation(locationDTO));
             } catch (Error e) {
                 e.printStackTrace();
             }
@@ -91,7 +91,7 @@ public class LocationController {
             return ResponseEntity.badRequest().body(errors);
         } else {
             try {
-                locationService.updateLocation(locationDTO);
+                return ResponseEntity.ok().body(locationService.updateLocation(locationDTO));
             } catch (Error e) {
                 e.printStackTrace();
             }
