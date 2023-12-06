@@ -91,7 +91,8 @@ public class LocationDTOMapperImpl implements LocationDTOMapper {
         return new LocationPointDTO(
                 location.getId(),
                 location.getCoordinate().getLatitude(),
-                location.getCoordinate().getLongitude());
+                location.getCoordinate().getLongitude(),
+                location.getTitle());
     }
 
     @Override
