@@ -15,10 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,10 +41,12 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventTitleDTO> getTodayIncomingEvents() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime endOfDay = now.withHour(23).withMinute(59).withSecond(59);
-        List<Event> todayEvents = eventRepository.findAllByOpenToPublicIsTrueAndStartsAtBetweenOrderByStartsAtAsc(now, endOfDay);
+        LocalDateTime startOfDay = LocalDateTime.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 0, 0, 0);
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        List<Event> todayEvents = eventRepository.findAllEventsOnDay(startOfDay, endOfDay);
         return eventDTOMapper.getEventTitlesDTOFromEvent(todayEvents);
     }
+
 
     public List<EventDTO> getAllAcceptedEvents() {
         List<Event> events = eventRepository.findAll();
