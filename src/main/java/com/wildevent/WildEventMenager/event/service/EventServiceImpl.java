@@ -49,9 +49,12 @@ public class EventServiceImpl implements EventService {
 
 
     public List<EventDTO> getAllAcceptedEvents() {
-        List<Event> events = eventRepository.findAll();
-        return events.stream().map(eventDTOMapper::getEventDtoFromEvent).collect(Collectors.toList());
-
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime today = LocalDateTime.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 0, 0, 0);
+        List<Event> eventList = eventRepository.findAllByStartsAt(today);
+        return eventList.stream()
+                .map(eventDTOMapper::getEventDtoFromEvent)
+                .collect(Collectors.toList());
     }
 
     @Override
