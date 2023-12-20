@@ -14,12 +14,16 @@ import java.util.UUID;
 
 public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findAllByOpenToPublicIsTrueAndStartsAtBetweenOrderByStartsAtAsc(LocalDateTime now, LocalDateTime endOfDay);
+
     // TODO: Consider whether, after removing content from MVP,
     //  we should still maintain the distinction between public and private events.
     //  This caused issues when updating events to public after the 'startsAt' time has passed.
     @Query("SELECT e FROM Event e WHERE (e.startsAt < :endOfDay OR e.startsAt = :endOfDay) AND e.endsAt > :startOfDay")
     List<Event> findAllEventsOnDay(@Param("startOfDay") LocalDateTime startOfDay,
                                    @Param("endOfDay") LocalDateTime endOfDay);
+
+    @Query("SELECT e FROM Event e WHERE e.startsAt >= :today")
+    List<Event> findAllByStartsAt(@Param("today") LocalDateTime today);
 
     @Modifying
     @Query("DELETE FROM Event e WHERE e.location = :location")
